@@ -1,18 +1,4 @@
-# Create SSM encrypted data for wordpress environment variables
-resource "aws_ssm_parameter" "ssm-key" {
-  for_each = tomap({
-    "/wordpress/WORDPRESS_DB_HOST"     = aws_rds_cluster.aurora.endpoint
-    "/wordpress/WORDPRESS_DB_USER"     = var.db_username
-    "/wordpress/WORDPRESS_DB_PASSWORD" = var.db_password
-    "/wordpress/WORDPRESS_DB_NAME"     = var.db_name
-  })
-
-  name   = each.key
-  type   = "SecureString"
-  value  = each.value
-  key_id = var.kms_key_id
-
-}
+#RDS Aurora Serverless
 
 resource "aws_rds_cluster" "aurora" {
   cluster_identifier      = "aurora-cluster"
@@ -47,4 +33,8 @@ resource "aws_rds_cluster_instance" "aurora_instance" {
 resource "aws_db_subnet_group" "db" {
   name       = "${var.name}-db-subnet-group"
   subnet_ids = var.db_subnets
+}
+
+output "rds_endpoint" {
+  value = aws_rds_cluster.aurora.endpoint
 }

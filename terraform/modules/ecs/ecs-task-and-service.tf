@@ -1,19 +1,30 @@
 # ECS TASK DEFINITION
+
+data "aws_ssm_parameter" "ssm-key" {
+  for_each = toset([
+    "/wordpress/WORDPRESS_DB_HOST",
+    "/wordpress/WORDPRESS_DB_USER",
+    "/wordpress/WORDPRESS_DB_PASSWORD",
+    "/wordpress/WORDPRESS_DB_NAME",
+  ])
+
+  name = each.value
+}
 resource "aws_ecs_task_definition" "task1" {
   family             = "${var.name}-task"
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_exec_role.arn
   network_mode       = "awsvpc"
-  cpu                = 100
-  memory             = 128
+  # cpu                = 
+  memory = 128
   container_definitions = jsonencode([{
-    name         = "${var.name}-container",
-    image        = "${aws_ecr_repository.repo.repository_url}:${var.image_tag}",
+    name      = "${var.name}-container",
+    image     = "${aws_ecr_repository.repo.repository_url}:${var.image_tag}",
     essential = true,
-    restart    = "always",
+    restart   = "always",
     portMappings = [{
-        containerPort = var.container_port,
-        protocol      = "tcp"
+      containerPort = var.container_port,
+      protocol      = "tcp"
     }],
 
     mountPoints = [{
@@ -24,20 +35,20 @@ resource "aws_ecs_task_definition" "task1" {
 
     environment = [
       {
-      name  = "WORDPRESS_DB_HOST"
-      value = "${var.ssm-key["/wordpress/WORDPRESS_DB_HOST"].value}:3306"
+        name  = "WORDPRESS_DB_HOST"
+        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_HOST"].value
       },
       {
-      name  = "WORDPRESS_DB_NAME"
-      value = var.ssm-key["/wordpress/WORDPRESS_DB_NAME"].value
+        name  = "WORDPRESS_DB_NAME"
+        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_NAME"].value
       },
       {
-      name  = "WORDPRESS_DB_USER"
-      value = var.ssm-key["/wordpress/WORDPRESS_DB_USER"].value
+        name  = "WORDPRESS_DB_USER"
+        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_USER"].value
       },
       {
-      name  = "WORDPRESS_DB_PASSWORD"
-      value = var.ssm-key["/wordpress/WORDPRESS_DB_PASSWORD"].value
+        name  = "WORDPRESS_DB_PASSWORD"
+        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_PASSWORD"].value
       },
     ]
 
@@ -54,8 +65,8 @@ resource "aws_ecs_task_definition" "task1" {
   volume {
     name = "${var.name}-efs-volume"
     efs_volume_configuration {
-      file_system_id          = aws_efs_file_system.fs.id
-      transit_encryption      = "ENABLED"
+      file_system_id     = aws_efs_file_system.fs.id
+      transit_encryption = "ENABLED"
       authorization_config {
         access_point_id = aws_efs_access_point.test.id
         iam             = "DISABLED"
@@ -66,12 +77,12 @@ resource "aws_ecs_task_definition" "task1" {
 
 # ECS SERVICE
 resource "aws_ecs_service" "default" {
-  name            = "${var.name}-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.task1.arn
+  name                = "${var.name}-service"
+  cluster             = aws_ecs_cluster.main.id
+  task_definition     = aws_ecs_task_definition.task1.arn
   scheduling_strategy = "REPLICA"
-  desired_count   = 2
-  launch_type     = "EC2"
+  desired_count       = 2
+  launch_type         = "EC2"
   network_configuration {
     subnets          = var.ecs_subnets
     security_groups  = var.ecs_security_groups

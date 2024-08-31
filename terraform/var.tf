@@ -38,7 +38,7 @@ variable "container_port" {
   description = "Port on which the container listens. Defaults to 80"
   type        = number
   default     = 80
-  
+
 }
 
 variable "ecs_instance_type" {
@@ -61,13 +61,13 @@ variable "image_tag" {
 variable "container_path" {
   description = "Path to the container. Defaults to /var/www/html"
   type        = string
-  default = "/var/www/html"
+  default     = "/var/www/html"
 }
 
 variable "ssh_key_name" {
-  description = "SSH key for the ECS instances used for debugging. Default is us-east-1" 
+  description = "SSH key for the ECS instances used for debugging. Default is us-east-1"
   type        = string
-  default = "us-east-1"
+  default     = "us-east-1"
 }
 
 variable "efs_direrctory" {

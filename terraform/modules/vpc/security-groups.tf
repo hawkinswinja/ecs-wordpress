@@ -54,26 +54,26 @@ resource "aws_security_group" "private_sg" {
   vpc_id = aws_vpc.ecs-vpc.id
 
   ingress {
-    description = "Allow ssh from public security group"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    description     = "Allow ssh from public security group"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [aws_security_group.public_sg.id]
   }
 
   ingress {
-    description = "Allow http from public security group"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
+    description     = "Allow http from public security group"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
     security_groups = [aws_security_group.public_sg.id]
   }
 
   egress {
-    description = "Allow mysql traffic to rds security group"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
+    description     = "Allow mysql traffic to rds security group"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
     security_groups = [aws_security_group.rds_sg.id]
   }
 
@@ -86,13 +86,13 @@ resource "aws_security_group" "private_sg" {
   }
 
   egress {
-    description = "Allow nfs traffic to efs security group"
-    from_port   = 2049
-    to_port     = 2049
-    protocol    = "tcp"
+    description     = "Allow nfs traffic to efs security group"
+    from_port       = 2049
+    to_port         = 2049
+    protocol        = "tcp"
     security_groups = [aws_security_group.efs_sg.id]
   }
- 
+
 }
 
 resource "aws_security_group" "rds_sg" {
@@ -116,9 +116,9 @@ resource "aws_security_group" "efs_sg" {
   vpc_id = aws_vpc.ecs-vpc.id
 
   ingress {
-    from_port       = 2049
-    to_port         = 2049
-    protocol        = "tcp"
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
     cidr_blocks = var.private_subnet_cidr
   }
 

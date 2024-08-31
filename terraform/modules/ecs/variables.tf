@@ -57,10 +57,6 @@ variable "certificate_arn" {
   type        = string
 }
 
-variable "ssm-key" {
-  description = "SSM key from the rds module"
-}
-
 variable "vpc_id" {
   description = "VPC ID for the ECS cluster"
   type        = string
@@ -79,5 +75,5 @@ variable "container_path" {
 variable "efs_directory" {
   description = "Directory for the EFS access point"
   type        = string
-  
+
 }

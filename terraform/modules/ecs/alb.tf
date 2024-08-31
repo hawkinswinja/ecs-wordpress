@@ -1,14 +1,14 @@
 # Application load balancer through port 443
 
 resource "aws_lb" "alb" {
-  name               = "${var.name}-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = var.alb_security_group
-  subnets            = var.alb_subnets
-  enable_deletion_protection = false
-  enable_http2                = true
-  idle_timeout                = 30
+  name                             = "${var.name}-alb"
+  internal                         = false
+  load_balancer_type               = "application"
+  security_groups                  = var.alb_security_group
+  subnets                          = var.alb_subnets
+  enable_deletion_protection       = false
+  enable_http2                     = true
+  idle_timeout                     = 30
   enable_cross_zone_load_balancing = true
   tags = {
     Name = "${var.name}-alb"

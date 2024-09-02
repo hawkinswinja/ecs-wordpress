@@ -1,15 +1,5 @@
 # ECS TASK DEFINITION
 
-data "aws_ssm_parameter" "ssm-key" {
-  for_each = toset([
-    "/wordpress/WORDPRESS_DB_HOST",
-    "/wordpress/WORDPRESS_DB_USER",
-    "/wordpress/WORDPRESS_DB_PASSWORD",
-    "/wordpress/WORDPRESS_DB_NAME",
-  ])
-
-  name = each.value
-}
 resource "aws_ecs_task_definition" "task1" {
   family             = "${var.name}-task"
   task_role_arn      = aws_iam_role.ecs_task_role.arn
@@ -33,22 +23,22 @@ resource "aws_ecs_task_definition" "task1" {
       readOnly      = false,
     }],
 
-    environment = [
+    secrets = [
       {
-        name  = "WORDPRESS_DB_HOST"
-        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_HOST"].value
+        name      = "WORDPRESS_DB_HOST"
+        valueFrom = var.ssm_parameter["/wordpress/WORDPRESS_DB_HOST"].arn
       },
       {
-        name  = "WORDPRESS_DB_NAME"
-        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_NAME"].value
+        name      = "WORDPRESS_DB_NAME"
+        valueFrom = var.ssm_parameter["/wordpress/WORDPRESS_DB_NAME"].arn
       },
       {
-        name  = "WORDPRESS_DB_USER"
-        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_USER"].value
+        name      = "WORDPRESS_DB_USER"
+        valueFrom = var.ssm_parameter["/wordpress/WORDPRESS_DB_USER"].arn
       },
       {
-        name  = "WORDPRESS_DB_PASSWORD"
-        value = aws_ssm_parameter.ssm-key["/wordpress/WORDPRESS_DB_PASSWORD"].value
+        name      = "WORDPRESS_DB_PASSWORD"
+        valueFrom = var.ssm_parameter["/wordpress/WORDPRESS_DB_PASSWORD"].arn
       },
     ]
 

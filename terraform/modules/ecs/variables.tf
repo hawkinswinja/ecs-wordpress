@@ -77,3 +77,13 @@ variable "efs_directory" {
   type        = string
 
 }
+
+variable "ssm_parameter" {
+  description = "SSM parameter for the ECS task"
+  # type        = map(string)
+}
+
+variable "kms_key_id" {
+  description = "KMS key arn"
+  type        = string
+}

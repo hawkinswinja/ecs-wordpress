@@ -23,6 +23,7 @@ module "ecs" {
   alb_security_group     = [module.vpc.public_sg]
   ecs_security_groups    = [module.vpc.private_sg]
   efs_security_group_ids = [module.vpc.efs_sg]
+  ssm_parameter          = module.rds.ssm_parameter
   image_tag              = var.image_tag
   repo-name              = var.repo-name
   certificate_arn        = var.certificate_arn
@@ -32,6 +33,7 @@ module "ecs" {
   ecs_instance_type      = var.ecs_instance_type
   ssh_key_name           = var.ssh_key_name
   efs_directory          = var.efs_direrctory
+  kms_key_id             = var.kms_key_id
 }
 
 output "ecr_repo_url" {
@@ -40,7 +42,4 @@ output "ecr_repo_url" {
 
 output "alb_dns_name" {
   value = module.ecs.alb_dns_name
-}
-output "database_endpoint" {
-  value = module.rds.rds_endpoint
 }

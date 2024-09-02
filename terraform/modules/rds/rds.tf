@@ -34,7 +34,3 @@ resource "aws_db_subnet_group" "db" {
   name       = "${var.name}-db-subnet-group"
   subnet_ids = var.db_subnets
 }
-
-output "rds_endpoint" {
-  value = aws_rds_cluster.aurora.endpoint
-}

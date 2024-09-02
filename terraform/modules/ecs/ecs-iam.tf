@@ -1,3 +1,4 @@
+# ECS Instance Role for EC2 Instances in ECS Cluster
 resource "aws_iam_role" "ecs_instance_role" {
   name = "ecsInstanceRole"
 
@@ -54,7 +55,42 @@ resource "aws_iam_role_policy_attachment" "ecs_exec_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_ssm_policy" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+# Uncomment and attach this policy to the correct role if needed
+# resource "aws_iam_role_policy_attachment" "ecs_task_ssm_policy" {
+#   role       = aws_iam_role.ecs_task_role.name # Updated role
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+# }
+
+# Attach a custom inline policy to the ECS Execution Role
+resource "aws_iam_role_policy" "ecs_ssm_policy" {
+  name = "ecs-ssm-policy"
+  role = aws_iam_role.ecs_exec_role.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ssm:GetParameters",
+          "ssm:GetParameter",
+          "ssm:GetParametersByPath"
+        ],
+        "Resource" : [
+          "arn:aws:ssm:${var.log_region}:${data.aws_caller_identity.current.account_id}:parameter/wordpress/*" # Updated ARN
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:Decrypt"
+        ],
+        "Resource" : [
+          "${var.kms_key_id}"
+        ]
+      }
+    ]
+  })
 }
+
+data "aws_caller_identity" "current" {}

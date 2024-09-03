@@ -6,7 +6,7 @@ resource "aws_ecs_task_definition" "task1" {
   execution_role_arn = aws_iam_role.ecs_exec_role.arn
   network_mode       = "awsvpc"
   # cpu                = 
-  memory = 128
+  memory = 600
   container_definitions = jsonencode([{
     name      = "${var.name}-container",
     image     = "${aws_ecr_repository.repo.repository_url}:${var.image_tag}",

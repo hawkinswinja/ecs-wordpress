@@ -11,7 +11,7 @@ on:
     paths: ["terraform/**"]    
   pull_request:
     branches: [ "main" ]
-    paths: ["terraform/**]
+    paths: ["terraform/**"]
 
 jobs:
   tfsec:

@@ -1,6 +1,6 @@
-resource "aws_ssm_parameter" "ssm-key" {
+resource "aws_ssm_parameter" "ssm_key" {
   for_each = tomap({
-    "/wordpress/WORDPRESS_DB_HOST"     = aws_rds_cluster.aurora.endpoint
+    "/wordpress/WORDPRESS_DB_HOST"     = "${aws_rds_cluster.aurora.endpoint}:3306"
     "/wordpress/WORDPRESS_DB_USER"     = var.db_username
     "/wordpress/WORDPRESS_DB_PASSWORD" = var.db_password
     "/wordpress/WORDPRESS_DB_NAME"     = var.db_name
@@ -13,5 +13,5 @@ resource "aws_ssm_parameter" "ssm-key" {
 }
 
 output "ssm_parameter" {
-  value = aws_ssm_parameter.ssm-key
+  value = aws_ssm_parameter.ssm_key
 }

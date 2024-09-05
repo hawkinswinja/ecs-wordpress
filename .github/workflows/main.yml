@@ -42,14 +42,14 @@ jobs:
             
             - name: Set Image Tag to short SHA
               run: |
-                export TF_VAR_image_tag=$(git rev-parse --short HEAD)
-                echo $TF_VAR_image_tag
+                echo "SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+                echo ${{ env.SHA }}
 
             - name: Set up project repository
               working-directory: ./terraform
               run: |
                 terraform init
-                terraform apply -auto-approve --target=module.ecs.aws_ecr_repository.repo
+                terraform apply -auto-approve --target=module.ecs.aws_ecr_repository.repo -var "image_tag=${{ env.SHA }}"
 
             - name: Login to Amazon ECR
               id: login-ecr
@@ -60,5 +60,5 @@ jobs:
             #     REGISTRY: ${{ steps.login-ecr.outputs.registry }}
             #     REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
             #     IMAGE_TAG: $TF_VAR_image_tag
-              run: docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPOSITORY }}:$TF_VAR_image_tag ./app --push
+              run: docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ env.SHA }} ./app --push
         

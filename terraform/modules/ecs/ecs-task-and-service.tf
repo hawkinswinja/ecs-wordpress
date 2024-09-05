@@ -5,8 +5,7 @@ resource "aws_ecs_task_definition" "task1" {
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_exec_role.arn
   network_mode       = "awsvpc"
-  # cpu                = 
-  memory = 600
+  memory             = 128
   container_definitions = jsonencode([{
     name      = "${var.name}-container",
     image     = "${aws_ecr_repository.repo.repository_url}:${var.image_tag}",
@@ -67,20 +66,25 @@ resource "aws_ecs_task_definition" "task1" {
 
 # ECS SERVICE
 resource "aws_ecs_service" "default" {
-  name                = "${var.name}-service"
-  cluster             = aws_ecs_cluster.main.id
-  task_definition     = aws_ecs_task_definition.task1.arn
-  scheduling_strategy = "REPLICA"
-  desired_count       = 2
-  launch_type         = "EC2"
+  name                               = "${var.name}-service"
+  cluster                            = aws_ecs_cluster.main.id
+  task_definition                    = aws_ecs_task_definition.task1.arn
+  scheduling_strategy                = "REPLICA"
+  desired_count                      = 2
+  launch_type                        = "EC2"
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 150
+  health_check_grace_period_seconds  = 60
+  wait_for_steady_state              = true
+  force_new_deployment               = true
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
   network_configuration {
     subnets          = var.ecs_subnets
     security_groups  = var.ecs_security_groups
     assign_public_ip = false
-  }
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "cpu"
   }
 
   load_balancer {
@@ -92,8 +96,5 @@ resource "aws_ecs_service" "default" {
   lifecycle {
     ignore_changes = [desired_count]
   }
-
-  # placement_constraints {
-  #   type       = "memberOf"
-  # }
+  depends_on = [aws_iam_role.ecs_exec_role]
 }

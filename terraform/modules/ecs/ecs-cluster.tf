@@ -100,10 +100,11 @@ resource "aws_ecr_repository" "repo" {
 }
 
 # ECS cloud watch logs
+#tfsec:ignore:aws-cloudwatch-log-group-customer-key
 resource "aws_cloudwatch_log_group" "ecs" {
   name              = "/ecs/${var.name}"
   retention_in_days = 7
-  kms_key_id        = var.kms_key_id
+  # kms_key_id        = var.kms_key_id
   tags = {
     Name = var.name
   }

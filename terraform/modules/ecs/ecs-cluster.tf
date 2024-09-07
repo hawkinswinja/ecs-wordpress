@@ -61,7 +61,7 @@ resource "aws_ecs_capacity_provider" "main" {
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "${ var.name }-cluster"
+  name = "${var.name}-cluster"
 }
 
 resource "aws_ecs_cluster_capacity_providers" "example" {

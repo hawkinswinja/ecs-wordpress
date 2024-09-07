@@ -64,7 +64,7 @@ jobs:
 
             - name: Terraform Apply
               working-directory: ./terraform
-              run: terraform apply --parallelism=60 "ecs.out"
+              run: terraform apply "ecs.out"
 
             - name: Remove nat gateway
               working-directory: ./terraform

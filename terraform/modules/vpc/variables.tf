@@ -18,3 +18,16 @@ variable "vpc_name" {
   default     = "ecs-project1"
   type        = string
 }
+
+variable "ssh_key_name" {
+  description = "Name of ssh_key"
+  default     = "us-east-1"
+  type        = string
+}
+
+variable "debug" {
+  description = "Create a public EC2 instance for debugging"
+  default     = false
+  type        = bool
+  
+}

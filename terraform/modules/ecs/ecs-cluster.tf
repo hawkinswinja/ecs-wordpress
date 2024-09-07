@@ -20,6 +20,9 @@ resource "aws_launch_template" "main" {
       echo ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE=true >> /etc/ecs/ecs.config;
     EOF
   )
+  metadata_options {
+    http_tokens = "required"
+  }
 }
 
 resource "aws_autoscaling_group" "ecs_asg" {
@@ -62,6 +65,11 @@ resource "aws_ecs_capacity_provider" "main" {
 
 resource "aws_ecs_cluster" "main" {
   name = "${var.name}-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "example" {
@@ -76,14 +84,18 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
 }
 
 # ECR repository
-
 resource "aws_ecr_repository" "repo" {
   name                 = var.repo-name
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = "IMMUTABLE"
   force_delete         = "true"
 
   image_scanning_configuration {
     scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "KMS"
+    kms_key         = var.kms_key_id
   }
 }
 
@@ -91,6 +103,7 @@ resource "aws_ecr_repository" "repo" {
 resource "aws_cloudwatch_log_group" "ecs" {
   name              = "/ecs/${var.name}"
   retention_in_days = 7
+  kms_key_id        = var.kms_key_id
   tags = {
     Name = var.name
   }

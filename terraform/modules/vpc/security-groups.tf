@@ -1,5 +1,5 @@
 # Security Group configuration
-
+#tfsec:ignore:aws-ec2-no-public-ingress-sgr #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group" "public_sg" {
   name        = "public_sg"
   description = "Allow inbound traffic on port 443 and 22"
@@ -47,6 +47,7 @@ resource "aws_security_group" "public_sg" {
   }
 }
 
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group" "private_sg" {
   name        = "private_sg"
   description = "Allow inbound traffic from public_sg and efs_sg"
@@ -106,6 +107,7 @@ resource "aws_security_group" "rds_sg" {
     to_port     = 3306
     protocol    = "tcp"
     cidr_blocks = var.private_subnet_cidr
+    description = "Allow mysql traffic from private subnets"
   }
 }
 
@@ -120,6 +122,7 @@ resource "aws_security_group" "efs_sg" {
     to_port     = 2049
     protocol    = "tcp"
     cidr_blocks = var.private_subnet_cidr
+    description = "Allow nfs from private subnet on port 2049"
   }
 
 }

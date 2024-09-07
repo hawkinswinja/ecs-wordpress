@@ -75,3 +75,10 @@ variable "efs_direrctory" {
   type        = string
   default     = "/efs"
 }
+
+variable "debug" {
+  description = "Create a public EC2 instance for debugging"
+  type        = bool
+  default     = false
+  
+}

@@ -27,7 +27,6 @@ variable "ssh_key_name" {
 
 variable "debug" {
   description = "Create a public EC2 instance for debugging"
-  default     = false
   type        = bool
 
 }

@@ -23,6 +23,7 @@ resource "aws_instance" "debug" {
   key_name        = var.ssh_key_name
   subnet_id       = aws_subnet.ecs-public-subnet[0].id
   security_groups = [aws_security_group.public_sg.id]
+  associate_public_ip_address = true
   tags = {
     Name = "Dev"
   }

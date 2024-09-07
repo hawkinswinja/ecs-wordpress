@@ -1,6 +1,7 @@
 module "vpc" {
   source   = "./modules/vpc"
   vpc_name = var.vpc_name
+  debug = var.debug
 }
 
 module "rds" {

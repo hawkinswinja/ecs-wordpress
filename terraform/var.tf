@@ -44,7 +44,7 @@ variable "container_port" {
 variable "ecs_instance_type" {
   description = "Instance type for the ECS cluster. Default is t2.micro"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
 }
 
 variable "certificate_arn" {

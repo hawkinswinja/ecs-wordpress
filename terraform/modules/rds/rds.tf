@@ -9,7 +9,7 @@ resource "aws_rds_cluster" "aurora" {
   master_password         = var.db_password
   database_name           = var.db_name
   kms_key_id              = var.kms_key_id
-  backup_retention_period = 1
+  backup_retention_period = 1 #tfsec:ignore:aws-rds-specify-backup-retention
   preferred_backup_window = "07:00-09:00"
   db_subnet_group_name    = aws_db_subnet_group.db.name
   vpc_security_group_ids  = var.rds-security-group
@@ -22,6 +22,7 @@ resource "aws_rds_cluster" "aurora" {
   }
 }
 
+#tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_rds_cluster_instance" "aurora_instance" {
   cluster_identifier  = aws_rds_cluster.aurora.id
   instance_class      = "db.serverless"

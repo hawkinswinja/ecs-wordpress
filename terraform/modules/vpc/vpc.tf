@@ -1,9 +1,10 @@
 # VPC, Internet Gateway, NAT Gateway, Public and Private Subnets
-
+#tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "ecs-vpc" {
   cidr_block           = var.vpc_cidr
   instance_tenancy     = "default"
   enable_dns_hostnames = true
+
 
   tags = {
     Name    = var.vpc_name

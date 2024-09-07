@@ -56,9 +56,17 @@ jobs:
               uses: aws-actions/amazon-ecr-login@v2
               
             - name: Build, tag, and push docker image to Amazon ECR
-            #   env:
-            #     REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-            #     REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-            #     IMAGE_TAG: $TF_VAR_image_tag
               run: docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.AWS_ECR_REPOSITORY }}:${{ env.SHA }} ./app --push
+
+            - name: Terraform Plan
+              working-directory: ./terraform
+              run: terraform plan --out ecs.out -var "image_tag=${{ env.SHA }}"
+
+            - name: Terraform Apply
+              working-directory: ./terraform
+              run: terraform apply "ecs.out"
+
+            - name: Remove nat gateway
+              working-directory: ./terraform
+              run: terraform destroy -auto-approve --target=module.vpc.aws_nat_gateway.ecs-ngw --target=module.vpc.aws_eip.nat
         

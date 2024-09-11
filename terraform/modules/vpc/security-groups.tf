@@ -94,6 +94,14 @@ resource "aws_security_group" "private_sg" {
     security_groups = [aws_security_group.efs_sg.id]
   }
 
+  egress {
+    description = "Allow all icmp traffic"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 }
 
 resource "aws_security_group" "rds_sg" {
